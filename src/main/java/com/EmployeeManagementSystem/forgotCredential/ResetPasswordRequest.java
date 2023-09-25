@@ -1,0 +1,11 @@
+package com.EmployeeManagementSystem.forgotCredential;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class ResetPasswordRequest {
+    private String otp;
+    private String password;
+}
