@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Integer> {
-    public PasswordResetToken findByOtp(String otp);
+    PasswordResetToken findByOtp(String otp);
 
     @Transactional
     @Modifying

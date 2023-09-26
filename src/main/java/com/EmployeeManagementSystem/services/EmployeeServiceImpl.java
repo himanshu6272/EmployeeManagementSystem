@@ -12,11 +12,12 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService{
+public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger log = Logger.getLogger(EmployeeServiceImpl.class);
     @Autowired
     EmployeeRepository employeeRepository;
+
     @Override
     public boolean employeeExist(String email) {
         return this.employeeRepository.employeeExist(email);
@@ -29,8 +30,8 @@ public class EmployeeServiceImpl implements EmployeeService{
             employee.setCreatedOn(new Date());
             employee.setCreatedBy(email);
             log.info("New Employee");
-        }else {
-            Employee oldEmployee = this.employeeRepository.findById(employee.getId()).orElseThrow(()-> new ResourceNotFoundException("Employee", "Id", employee.getId()));
+        } else {
+            Employee oldEmployee = this.employeeRepository.findById(employee.getId()).orElseThrow(() -> new ResourceNotFoundException("Employee", "Id", employee.getId()));
             employee.setUpdatedBy(email);
             employee.setUpdatedOn(new Date());
             employee.setId(oldEmployee.getId());
@@ -40,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public Employee getEmployeeById(int id) {
-        return this.employeeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Employee", "Id", id));
+        return this.employeeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Employee", "Id", id));
     }
 
     @Override

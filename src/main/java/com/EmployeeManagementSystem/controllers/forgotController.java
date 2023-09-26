@@ -1,6 +1,9 @@
-package com.EmployeeManagementSystem.forgotCredential;
+package com.EmployeeManagementSystem.controllers;
 
 import com.EmployeeManagementSystem.exceptions.ApiResponse;
+import com.EmployeeManagementSystem.forgotCredential.ForgotPasswordRequest;
+import com.EmployeeManagementSystem.forgotCredential.PasswordResetToken;
+import com.EmployeeManagementSystem.forgotCredential.ResetPasswordRequest;
 import com.EmployeeManagementSystem.models.User;
 import com.EmployeeManagementSystem.services.EmailService;
 import com.EmployeeManagementSystem.services.UserService;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Date;
 
 @RestController
@@ -20,7 +24,7 @@ import java.util.Date;
 public class forgotController {
     @Autowired
     UserService userService;
-//    @Autowired
+    //    @Autowired
 //    PasswordResetTokenRepository tokenRepository;
     @Autowired
     EmailService emailService;
@@ -31,9 +35,9 @@ public class forgotController {
     OTPGenerator otpGenerator;
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<ApiResponse>forgotPassword(@RequestBody ForgotPasswordRequest request){
+    public ResponseEntity<ApiResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         String otp = this.otpGenerator.generateOTP();
-        if (this.userService.userExist(request.getEmail())){
+        if (this.userService.userExist(request.getEmail())) {
             User user = this.userService.getUserByEmail(request.getEmail());
             this.userService.deleteToken(user.getId());
             PasswordResetToken token = new PasswordResetToken();
@@ -41,21 +45,21 @@ public class forgotController {
             token.setUser(user);
             token.setExpiryDate(new Date(System.currentTimeMillis() + 600000));
             PasswordResetToken createdToken = this.userService.saveToken(token);
-            this.emailService.sendEmail(user.getEmail(), "Password Reset OTP", "Dear " + user.getFirstName() + ",\n\nYour OTP is: "+createdToken.getOtp()+"");
+            this.emailService.sendEmail(user.getEmail(), "Password Reset OTP", "Dear " + user.getFirstName() + ",\n\nYour OTP is: " + createdToken.getOtp() + "");
             return new ResponseEntity<>(new ApiResponse("OTP is sent to your email", null), HttpStatus.OK);
-        }else {
+        } else {
             return new ResponseEntity<>(new ApiResponse("User not exist with this email", request.getEmail()), HttpStatus.OK);
         }
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<ApiResponse> resetPassword(@RequestBody ResetPasswordRequest request){
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
         PasswordResetToken token = this.userService.getByOtp(request.getOtp());
-        if (token == null){
+        if (token == null) {
             return new ResponseEntity<>(new ApiResponse("OTP is Invalid", null), HttpStatus.NOT_FOUND);
         } else if (token.getExpiryDate().getTime() - System.currentTimeMillis() <= 0) {
             return new ResponseEntity<>(new ApiResponse("OTP is Expired", null), HttpStatus.OK);
-        }else {
+        } else {
             User user = token.getUser();
             user.setPassword(encoder.encode(request.getPassword()));
             User updatedUser = this.userService.createUser(user);

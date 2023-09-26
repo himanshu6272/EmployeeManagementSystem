@@ -21,7 +21,6 @@ public class SecurityConfig {
 
     public static final String[] PUBLIC_URLS = {
             "/user/create",
-//            "/employee/create",
             "/auth/login",
             "/forgot/**"
     };
@@ -29,18 +28,19 @@ public class SecurityConfig {
     JwtAuthenticationFilter filter;
     @Autowired
     JwtAuthenticationEntryPoint point;
+
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public UserDetailsService getUserDetailsService(){
+    public UserDetailsService getUserDetailsService() {
         return new CustomUserDetailsService();
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(){
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(getUserDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers(PUBLIC_URLS).permitAll()
                 .requestMatchers("/user/**", "/employee/**").hasRole("ADMIN")
-                .requestMatchers( "/user/update", "/user/getById/**").hasRole("USER")
+                .requestMatchers("/user/update", "/user/getById/**").hasRole("USER")
                 .anyRequest()
                 .authenticated()
                 .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point))

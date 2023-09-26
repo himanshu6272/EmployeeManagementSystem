@@ -12,7 +12,10 @@ import java.util.Date;
 
 @Entity
 @Table(name = "passwordResetToken")
-@Getter@Setter@NoArgsConstructor@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private static final Logger log = Logger.getLogger(UserServiceImpl.class);
     @Autowired
     UserRepository userRepository;
     @Autowired
     PasswordResetTokenRepository tokenRepository;
+
     @Override
     public User createUser(User user) {
         List<Role> roles = new ArrayList<>();
@@ -31,13 +32,13 @@ public class UserServiceImpl implements UserService{
             roles.add(role);
             user.setRoles(roles);
             log.info(user);
-        }else {
-            User oldUser = this.userRepository.findById(user.getId()).orElseThrow(()-> new ResourceNotFoundException("User", "Id", user.getId()));
-            if (user.getRoles() == null){
+        } else {
+            User oldUser = this.userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("User", "Id", user.getId()));
+            if (user.getRoles() == null) {
                 user.setRoles(oldUser.getRoles());
-            }else {
+            } else {
                 List<Role> roleList = user.getRoles();
-                for (Role role1:roleList){
+                for (Role role1 : roleList) {
                     role1.setUser(user);
                 }
                 user.setRoles(roleList);
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserById(int id) {
-        return this.userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User", "Id", id));
+        return this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "Id", id));
     }
 
     @Override

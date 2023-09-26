@@ -15,11 +15,8 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    public static final long JWT_TOKEN_VALIDITY = 300;
-
-    //    public static final long JWT_TOKEN_VALIDITY =  60;
-    private SecretKey signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-//    private String secret = "EMPLOYEEMANAGEMENTSYSTEMSECRETKEYFORSPRINGBOOTPROJECT";
+    private static final long JWT_TOKEN_VALIDITY = 5*60;
+    private final SecretKey signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {

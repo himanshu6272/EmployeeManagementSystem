@@ -28,10 +28,10 @@ public class AuthController {
     CustomUserDetailsService userDetailsService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody AuthRequest request){
+    public ResponseEntity<ApiResponse> login(@RequestBody AuthRequest request) {
         this.manager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(request.getEmail());
-        String token =this.jwtUtil.generateToken(userDetails);
+        String token = this.jwtUtil.generateToken(userDetails);
         return new ResponseEntity<>(new ApiResponse("LoggedIn Successfully", token), HttpStatus.OK);
     }
 }

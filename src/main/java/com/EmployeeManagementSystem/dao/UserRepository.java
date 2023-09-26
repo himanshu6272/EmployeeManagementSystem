@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email")
-    public boolean userExist(@Param("email") String email);
+    boolean userExist(@Param("email") String email);
 
 //    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email")
 //    User getUserByEmail(@Param("email") String email);
 
-    public User findUserByEmail(String email);
+    User findUserByEmail(String email);
 
 
 }

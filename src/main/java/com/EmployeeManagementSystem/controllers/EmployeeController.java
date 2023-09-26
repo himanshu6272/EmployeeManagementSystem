@@ -23,12 +23,12 @@ public class EmployeeController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> createEmployee(@RequestBody Employee employee, Principal principal){
-        if (this.employeeService.employeeExist(employee.getEmail())){
+    public ResponseEntity<ApiResponse> createEmployee(@RequestBody Employee employee, Principal principal) {
+        if (this.employeeService.employeeExist(employee.getEmail())) {
             return new ResponseEntity<>(new ApiResponse("Employee Already exists with this email", employee.getEmail()), HttpStatus.CONFLICT);
-        }else {
+        } else {
             Employee createdEmployee = this.employeeService.createEmployee(employee, principal);
-            if (createdEmployee != null){
+            if (createdEmployee != null) {
                 this.emailService.sendEmail(createdEmployee.getEmail(), "Welcome to Inexture!", "Dear " + createdEmployee.getFirstName() + ",\n\nWelcome to our Organization! We are excited to have you as a member and your account is successfully registered in our Management Portal.");
             }
             return new ResponseEntity<>(new ApiResponse("Employee Created Successfully", createdEmployee), HttpStatus.CREATED);
@@ -36,29 +36,29 @@ public class EmployeeController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse> updateEmployee(@RequestBody Employee employee, Principal principal){
+    public ResponseEntity<ApiResponse> updateEmployee(@RequestBody Employee employee, Principal principal) {
         Employee updatedEmployee = this.employeeService.createEmployee(employee, principal);
-        if (updatedEmployee != null){
+        if (updatedEmployee != null) {
             this.emailService.sendEmail(updatedEmployee.getEmail(), "Welcome to Inexture!", "Dear " + updatedEmployee.getFirstName() + ",\n\nYour personal details is successfully updated.");
         }
         return new ResponseEntity<>(new ApiResponse("Employee Updated Successfully", updatedEmployee), HttpStatus.OK);
     }
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<ApiResponse> getEmployeeById(@PathVariable("id") int id){
+    public ResponseEntity<ApiResponse> getEmployeeById(@PathVariable("id") int id) {
         Employee employee = this.employeeService.getEmployeeById(id);
         return new ResponseEntity<>(new ApiResponse("Get Employee by Id", employee), HttpStatus.FOUND);
     }
 
     @DeleteMapping("/delete/{id}")
 //    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteEmployee(@PathVariable("id") int id){
+    public ResponseEntity<ApiResponse> deleteEmployee(@PathVariable("id") int id) {
         this.employeeService.deleteEmployeeById(id);
         return new ResponseEntity<>(new ApiResponse("Employee deleted successfully", null), HttpStatus.OK);
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<ApiResponse> getAllEmployees(){
+    public ResponseEntity<ApiResponse> getAllEmployees() {
         List<Employee> employees = this.employeeService.getAllEmployees();
         return new ResponseEntity<>(new ApiResponse("All Employee List", employees), HttpStatus.OK);
     }
