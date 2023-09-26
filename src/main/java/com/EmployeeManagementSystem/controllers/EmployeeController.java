@@ -7,8 +7,10 @@ import com.EmployeeManagementSystem.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -20,11 +22,12 @@ public class EmployeeController {
     private EmailService emailService;
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse> createEmployee(@RequestBody Employee employee){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse> createEmployee(@RequestBody Employee employee, Principal principal){
         if (this.employeeService.employeeExist(employee.getEmail())){
             return new ResponseEntity<>(new ApiResponse("Employee Already exists with this email", employee.getEmail()), HttpStatus.CONFLICT);
         }else {
-            Employee createdEmployee = this.employeeService.createEmployee(employee);
+            Employee createdEmployee = this.employeeService.createEmployee(employee, principal);
             if (createdEmployee != null){
                 this.emailService.sendEmail(createdEmployee.getEmail(), "Welcome to Inexture!", "Dear " + createdEmployee.getFirstName() + ",\n\nWelcome to our Organization! We are excited to have you as a member and your account is successfully registered in our Management Portal.");
             }
@@ -33,8 +36,8 @@ public class EmployeeController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse> updateEmployee(@RequestBody Employee employee){
-        Employee updatedEmployee = this.employeeService.createEmployee(employee);
+    public ResponseEntity<ApiResponse> updateEmployee(@RequestBody Employee employee, Principal principal){
+        Employee updatedEmployee = this.employeeService.createEmployee(employee, principal);
         if (updatedEmployee != null){
             this.emailService.sendEmail(updatedEmployee.getEmail(), "Welcome to Inexture!", "Dear " + updatedEmployee.getFirstName() + ",\n\nYour personal details is successfully updated.");
         }
@@ -48,6 +51,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/delete/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteEmployee(@PathVariable("id") int id){
         this.employeeService.deleteEmployeeById(id);
         return new ResponseEntity<>(new ApiResponse("Employee deleted successfully", null), HttpStatus.OK);

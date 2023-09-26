@@ -27,7 +27,7 @@ public class Employee {
     private String state;
     private String country;
     private String createdBy;
-    private String UpdatedBy;
+    private String updatedBy;
     private Date createdOn;
     private Date updatedOn;
 }

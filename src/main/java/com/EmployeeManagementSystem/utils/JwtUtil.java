@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    public static final long JWT_TOKEN_VALIDITY = 6;
+    public static final long JWT_TOKEN_VALIDITY = 300;
 
     //    public static final long JWT_TOKEN_VALIDITY =  60;
     private SecretKey signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
@@ -50,6 +50,7 @@ public class JwtUtil {
     //generate token for user
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+//        claims.put("roles", userDetails.getAuthorities());
         return doGenerateToken(claims, userDetails.getUsername());
     }
 

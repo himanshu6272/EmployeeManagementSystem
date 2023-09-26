@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -34,18 +35,48 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse> updateUser(@RequestBody User user){
-        User updatedUser = this.userService.createUser(user);
-        if (updatedUser != null){
-            this.emailService.sendEmail(updatedUser.getEmail(), "Welcome to Inexture!", "Dear " + updatedUser.getFirstName() + ",\n\nYour personal details is successfully updated.");
+    public ResponseEntity<ApiResponse> updateUser(@RequestBody User user, Principal principal){
+        String email = principal.getName();
+        User loggedUser = this.userService.getUserByEmail(email);
+        List<Role> roles = loggedUser.getRoles();
+        if(roles.contains("ROLE_ADMIN")){
+            User updatedUser = this.userService.createUser(user);
+            if (updatedUser != null){
+                this.emailService.sendEmail(updatedUser.getEmail(), "Welcome to Inexture!", "Dear " + updatedUser.getFirstName() + ",\n\nYour personal details is successfully updated.");
+            }
+            return new ResponseEntity<>(new ApiResponse("User Updated Successfully", updatedUser), HttpStatus.OK);
+        }else {
+            if (user.getId() == loggedUser.getId()){
+                user.setRoles(loggedUser.getRoles());
+                User updatedUser = this.userService.createUser(user);
+                if (updatedUser != null){
+                    this.emailService.sendEmail(updatedUser.getEmail(), "Welcome to Inexture!", "Dear " + updatedUser.getFirstName() + ",\n\nYour personal details is successfully updated.");
+                }
+                return new ResponseEntity<>(new ApiResponse("User Updated Successfully", updatedUser), HttpStatus.OK);
+            }else {
+                return new ResponseEntity<>(new ApiResponse("You can only update your own Profile", null), HttpStatus.OK);
+            }
+
         }
-        return new ResponseEntity<>(new ApiResponse("User Updated Successfully", updatedUser), HttpStatus.OK);
+
     }
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<ApiResponse> getUserById(@PathVariable("id") int id){
-        User user = this.userService.getUserById(id);
-        return new ResponseEntity<>(new ApiResponse("Get User by Id", user), HttpStatus.FOUND);
+    public ResponseEntity<ApiResponse> getUserById(@PathVariable("id") int id, Principal principal){
+        String email = principal.getName();
+        User loggedUser = this.userService.getUserByEmail(email);
+        List<Role> roles = loggedUser.getRoles();
+        if (roles.contains("ROLE_ADMIN")) {
+            User user = this.userService.getUserById(id);
+            return new ResponseEntity<>(new ApiResponse("Get User by Id", user), HttpStatus.FOUND);
+        }else {
+            if (id == loggedUser.getId()){
+                User user = this.userService.getUserById(id);
+                return new ResponseEntity<>(new ApiResponse("Get User by Id", user), HttpStatus.FOUND);
+            }else {
+                return new ResponseEntity<>(new ApiResponse("You can only view your own profile", null), HttpStatus.FOUND);
+            }
+        }
     }
 
     @DeleteMapping("/delete/{id}")

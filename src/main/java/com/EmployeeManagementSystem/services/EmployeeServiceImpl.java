@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,11 +23,16 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public Employee createEmployee(Employee employee) {
+    public Employee createEmployee(Employee employee, Principal principal) {
+        String email = principal.getName();
         if (employee.getId() == 0) {
+            employee.setCreatedOn(new Date());
+            employee.setCreatedBy(email);
             log.info("New Employee");
         }else {
             Employee oldEmployee = this.employeeRepository.findById(employee.getId()).orElseThrow(()-> new ResourceNotFoundException("Employee", "Id", employee.getId()));
+            employee.setUpdatedBy(email);
+            employee.setUpdatedOn(new Date());
             employee.setId(oldEmployee.getId());
         }
         return this.employeeRepository.save(employee);
